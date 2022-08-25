@@ -3,7 +3,7 @@ use super::*;
 
 #[test]
 fn add_task_test() {
-    let mut todo_list = Todo::new();
+    let mut todo_list = TodoList::new();
     let len_before = todo_list.tasks.len();
     todo_list.add_task("Buy milk".to_owned());
     todo_list.add_task("Make todo cli app".to_owned());
@@ -13,7 +13,7 @@ fn add_task_test() {
 
 #[test]
 fn remove_task_test() {
-    let mut todo_list = Todo::new();
+    let mut todo_list = TodoList::new();
     todo_list.add_task("Buy milk".to_owned());
     todo_list.add_task("Make todo cli app".to_owned());
     todo_list.add_task("I love linux".to_owned());
@@ -25,7 +25,7 @@ fn remove_task_test() {
 
 #[test]
 fn update_task_test() {
-    let mut todo_list = Todo::new();
+    let mut todo_list = TodoList::new();
     todo_list.add_task("Buy milk".to_owned());
     todo_list.add_task("Make todo cli app".to_owned());
     todo_list.add_task("I love linux".to_owned());
@@ -38,7 +38,7 @@ fn update_task_test() {
 
 #[test]
 fn change_status_test() {
-    let mut todo_list = Todo::new();
+    let mut todo_list = TodoList::new();
     todo_list.add_task("Buy milk".to_owned());
     todo_list.add_task("Make todo cli app".to_owned());
     todo_list.add_task("I love linux".to_owned());
@@ -50,7 +50,7 @@ fn change_status_test() {
 
 #[test]
 fn purge_test() {
-    let mut todo_list = Todo::new();
+    let mut todo_list = TodoList::new();
     todo_list.add_task("Buy milk".to_owned());
     todo_list.add_task("Make todo cli app".to_owned());
     todo_list.add_task("I love linux".to_owned());
