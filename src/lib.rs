@@ -1,7 +1,8 @@
-use std::io::{BufRead, BufReader, Write};
+use crossterm::event::{read, Event, KeyCode, KeyEvent};
+use crossterm::terminal;
+use std::io::{BufRead, BufReader, Write, Error, ErrorKind};
 use std::path::PathBuf;
 use std::{fs, io};
-use crossterm::event::{read, Event};
 
 pub struct Todo {
     tasks: Vec<TodoItem>,
@@ -160,14 +161,14 @@ Getting All tasks..."
     let mut todo = Todo::new();
     loop {
         todo.get_task();
-        let operation = if let Some(o) = read_operation() {
+        let operation = if let Ok(o) = read_operation() {
             o
         } else {
             continue;
         };
 
-        match operation.trim() {
-            "a" => {
+        match operation {
+            'a' => {
                 print!("\nAdd a new task: ");
                 let new_task = if let Some(t) = read_task() {
                     t
@@ -176,7 +177,7 @@ Getting All tasks..."
                 };
                 todo.add_task(new_task);
             }
-            "u" => {
+            'u' => {
                 print!("\nEnter the task number you want to update: ");
                 let index = if let Some(i) = read_index() {
                     i
@@ -192,7 +193,7 @@ Getting All tasks..."
                 };
                 todo.update_task(index, updated_task);
             }
-            "d" => {
+            'd' => {
                 print!("\nEnter the task number you want to delete: ");
                 let index = if let Some(i) = read_index() {
                     i
@@ -201,7 +202,7 @@ Getting All tasks..."
                 };
                 todo.remove_task(index);
             }
-            "c" => {
+            'c' => {
                 print!("\nEnter the task number you want to mark as complete: ");
                 let index = if let Some(i) = read_index() {
                     i
@@ -210,7 +211,7 @@ Getting All tasks..."
                 };
                 todo.complete_task(index);
             }
-            "C" => {
+            'C' => {
                 print!("\nEnter the task number you want to mark as not complete: ");
                 let index = if let Some(i) = read_index() {
                     i
@@ -219,15 +220,15 @@ Getting All tasks..."
                 };
                 todo.uncomplete_task(index);
             }
-            "x" => {
+            'x' => {
                 println!("\nCleaning up all completed tasks...");
                 todo.clean();
             }
-            "p" => {
+            'p' => {
                 println!("\nPurging all tasks...");
                 todo.purge();
             }
-            "q" => {
+            'q' => {
                 if let Err(_) = todo.flush() {
                     eprintln!("Could not write tasks to a file");
                 };
@@ -239,7 +240,7 @@ Getting All tasks..."
         };
     }
 
-    println!("Goodbye !");
+    println!("\nGoodbye !");
 }
 
 pub fn read_index() -> Option<u8> {
@@ -252,7 +253,7 @@ pub fn read_index() -> Option<u8> {
     let index = if let Ok(i) = index.trim().parse::<u8>() {
         i
     } else {
-        eprintln!("Could not parse task number {}, try again", index);
+        eprintln!("Could not parse task number {}, try again", index.trim());
         return None;
     };
     Some(index)
@@ -268,15 +269,24 @@ pub fn read_task() -> Option<String> {
     Some(new_task.trim().to_owned())
 }
 
-pub fn read_operation() -> Option<String> {
+pub fn read_operation() -> crossterm::Result<char> {
     print!("\n[a,u,d,c,C,x,p,q]: ");
     io::stdout().flush().unwrap();
-    let mut input = String::new();
-    if let Err(_) = io::stdin().read_line(&mut input) {
-        println!("Could not read input, try again");
-        return None;
-    };
-    Some(input)
+    terminal::enable_raw_mode()?;
+    if let Ok(Event::Key(KeyEvent {
+        code: KeyCode::Char(c),
+        ..
+    })) = read()
+    {
+        terminal::disable_raw_mode()?;
+        Ok(c)
+    } else {
+        terminal::disable_raw_mode()?;
+        Err(Error::new(
+            ErrorKind::Other,
+            "Could not read operation, try again",
+        ))
+    }
 }
 
 mod test;
