@@ -1,5 +1,4 @@
 use crossterm::event::{read, Event, KeyCode, KeyEvent};
-use crossterm::terminal;
 use std::io::{Error, ErrorKind, Write};
 
 mod todo_list;
@@ -16,8 +15,8 @@ d: Delete
 c: Complete
 C: Not Complete
 x: Clean
-p: purge
-q: quit
+p: Purge
+q: Quit
 
 Getting All tasks..."
     );
@@ -136,21 +135,22 @@ pub fn read_task() -> Option<String> {
 pub fn read_operation() -> crossterm::Result<char> {
     print!("\n[a,u,d,c,C,x,p,q]: ");
     std::io::stdout().flush().unwrap();
-    terminal::enable_raw_mode()?;
-    if let Ok(Event::Key(KeyEvent {
+    crossterm::terminal::enable_raw_mode()?;
+
+    let character = if let Ok(Event::Key(KeyEvent {
         code: KeyCode::Char(c),
         ..
     })) = read()
     {
-        terminal::disable_raw_mode()?;
         Ok(c)
     } else {
-        terminal::disable_raw_mode()?;
         Err(Error::new(
             ErrorKind::Other,
             "Could not read operation, try again",
         ))
-    }
+    };
+    crossterm::terminal::disable_raw_mode()?;
+    character
 }
 
 mod test;
