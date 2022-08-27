@@ -7,6 +7,12 @@ pub struct TodoList {
     todo_path: PathBuf,
 }
 
+impl Default for TodoList {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl TodoList {
     pub fn new() -> Self {
         let home_path = std::env::var("HOME").expect("Could not find $HOME path");
@@ -32,15 +38,13 @@ impl TodoList {
             todo_path,
         };
 
-        for line in reader.lines() {
-            if let Ok(line) = line {
-                let (status, content) = line.split_at(1);
-                let todo_item = TodoItem {
-                    content: content.to_owned(),
-                    is_completed: if status == "T" { true } else { false },
-                };
-                todo_list.tasks.push(todo_item);
-            }
+        for line in reader.lines().flatten() {
+            let (status, content) = line.split_at(1);
+            let todo_item = TodoItem {
+                content: content.to_owned(),
+                is_completed: status == "T"
+            };
+            todo_list.tasks.push(todo_item);
         }
 
         todo_list

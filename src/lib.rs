@@ -92,7 +92,7 @@ Getting All tasks..."
                 todo.purge();
             }
             'q' => {
-                if let Err(_) = todo.flush() {
+                if todo.flush().is_err() {
                     eprintln!("Could not write tasks to a file");
                 };
                 break;
@@ -109,7 +109,7 @@ Getting All tasks..."
 pub fn read_index() -> Option<u8> {
     std::io::stdout().flush().unwrap();
     let mut index = String::new();
-    if let Err(_) = std::io::stdin().read_line(&mut index) {
+    if std::io::stdin().read_line(&mut index).is_err() {
         eprintln!("Could not read input, try again");
         return None;
     };
@@ -125,7 +125,7 @@ pub fn read_index() -> Option<u8> {
 pub fn read_task() -> Option<String> {
     std::io::stdout().flush().unwrap();
     let mut new_task = String::new();
-    if let Err(_) = std::io::stdin().read_line(&mut new_task) {
+    if std::io::stdin().read_line(&mut new_task).is_err() {
         eprintln!("Could not read input, try again");
         return None;
     };
