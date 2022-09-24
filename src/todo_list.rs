@@ -58,8 +58,10 @@ impl TodoList {
     }
 
     pub fn get_task(&self) {
-        let completed = "🗹";
-        let not_completed = "☐";
+        // let completed = "🗹";
+        // let not_completed = "☐";
+        let completed = "[x]";
+        let not_completed = "[ ]";
         println!();
         self.tasks.iter().enumerate().for_each(|(index, todo)| {
             let status = if todo.is_completed {
@@ -110,11 +112,7 @@ impl TodoList {
     }
 
     pub fn flush(&self) -> Result<(), std::io::Error> {
-        let mut file = fs::OpenOptions::new()
-            .write(true)
-            .truncate(true)
-            .create(true)
-            .open(&self.todo_path)?;
+        let mut file = fs::File::create(&self.todo_path)?;
 
         let completed = "T";
         let not_completed = "F";
