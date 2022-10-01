@@ -13,10 +13,11 @@ a: Add
 u: Update
 d: Delete
 c: Complete
-C: Not Complete
+C: Uncomplete
 x: Clean
 p: Purge
-q: Quit
+q: Quit after saving
+Q: Quit without saving
 
 Getting All tasks..."
     );
@@ -97,13 +98,16 @@ Getting All tasks..."
                 };
                 break;
             }
+            'Q' => {
+                break;
+            }
             _ => {
                 eprintln!("Invalid input try again");
             }
         };
     }
 
-    println!("\nGoodbye !");
+    println!("\nGoodbye!");
 }
 
 pub fn read_index() -> Option<u8> {
@@ -133,7 +137,7 @@ pub fn read_task() -> Option<String> {
 }
 
 pub fn read_operation() -> crossterm::Result<char> {
-    print!("\n[a,u,d,c,C,x,p,q]: ");
+    print!("\n[a,u,d,c,C,x,p,q,Q]: ");
     std::io::stdout().flush().unwrap();
     crossterm::terminal::enable_raw_mode()?;
 
